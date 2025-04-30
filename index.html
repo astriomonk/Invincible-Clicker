@@ -22,10 +22,10 @@
 
     #game, #shop {
       display: none;
-      padding-top: 50px;
+      padding-top: 30px;
     }
 
-    .active {
+    #game.active, #shop.active {
       display: block;
     }
 
@@ -63,14 +63,14 @@
 <body>
   <h1>Invincible Clicker</h1>
 
-  <!-- Clicker Game UI -->
+  <!-- Main Game Screen -->
   <div id="game" class="active">
     <img id="omni" src="omni.png.png" alt="THICC Omni-Man">
     <div id="points">Omni-Points: 0</div>
     <button class="button" id="shopBtn">Shop</button>
   </div>
 
-  <!-- Shop UI -->
+  <!-- Shop Screen -->
   <div id="shop">
     <h2>Shop</h2>
     <button class="button" id="clickUpgrade">Upgrade Click Power (10 points)</button><br>
@@ -100,6 +100,9 @@
     const gameDiv = document.getElementById("game");
     const shopDiv = document.getElementById("shop");
 
+    // Show the main game screen by default
+    gameDiv.classList.add("active");
+
     omni.addEventListener("click", () => {
       points += clickPower;
       updateUI();
@@ -116,7 +119,7 @@
     autoUpgradeBtn.addEventListener("click", () => {
       if (points >= 50) {
         points -= 50;
-        ops += 1;
+        ops++;
         updateUI();
       }
     });
@@ -151,6 +154,7 @@
       pointsDisplay.textContent = "Omni-Points: " + Math.floor(points);
     }
 
+    // Add passive Omni-Points per second
     setInterval(() => {
       points += ops * opsMultiplier;
       updateUI();
