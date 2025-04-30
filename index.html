@@ -3,34 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title>Invincible Clicker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
   <style>
-    body {
+    html, body {
       margin: 0;
       padding: 0;
+      overflow: hidden;
       background: url('sky-image.png') no-repeat center center fixed;
       background-size: cover;
-      color: white;
       font-family: 'Arial', sans-serif;
+      color: white;
       text-align: center;
+      user-select: none;
+      touch-action: manipulation;
     }
 
     h1 {
-      font-size: 48px;
-      margin: 20px 0;
+      font-size: 72px;
+      margin: 40px 0 20px;
       color: yellow;
     }
 
-    #game, #shop {
-      display: none;
-      padding-top: 30px;
-    }
-
-    #game.active, #shop.active {
-      display: block;
-    }
-
     #character {
-      width: 300px;
+      width: 400px;
       cursor: pointer;
       transition: transform 0.1s ease;
     }
@@ -40,17 +35,17 @@
     }
 
     #points {
-      font-size: 24px;
-      margin: 20px 0;
+      font-size: 36px;
+      margin: 30px 0;
     }
 
     .button {
-      margin: 10px;
-      padding: 10px 20px;
-      font-size: 18px;
+      font-size: 28px;
+      padding: 16px 32px;
+      margin: 20px;
       background: #ff4747;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       color: white;
       cursor: pointer;
     }
@@ -59,17 +54,22 @@
       background: #ff2a2a;
     }
 
-    #saveBtn {
+    #saveBtn, #kidsBtn {
       position: absolute;
-      top: 10px;
-      right: 10px;
-      padding: 8px 16px;
-      background: #ffaa00;
-      color: black;
+      padding: 12px 24px;
+      font-size: 22px;
       font-weight: bold;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       cursor: pointer;
+      z-index: 10;
+    }
+
+    #saveBtn {
+      top: 20px;
+      right: 20px;
+      background: #ffaa00;
+      color: black;
     }
 
     #saveBtn:hover {
@@ -77,20 +77,22 @@
     }
 
     #kidsBtn {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      padding: 8px 16px;
+      top: 20px;
+      left: 20px;
       background: #00bbff;
       color: black;
-      font-weight: bold;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
     }
 
     #kidsBtn:hover {
       background: #33ccff;
+    }
+
+    #game, #shop {
+      display: none;
+    }
+
+    #game.active, #shop.active {
+      display: block;
     }
   </style>
 </head>
@@ -99,16 +101,14 @@
   <button id="saveBtn">Save</button>
   <h1 id="title">Invincible Clicker</h1>
 
-  <!-- Game Screen -->
   <div id="game" class="active">
     <img id="character" src="omni.png.png" alt="Character">
     <div id="points">Omni-Points: 0</div>
     <button class="button" id="shopBtn">Shop</button>
   </div>
 
-  <!-- Shop Screen -->
   <div id="shop">
-    <h2>Shop</h2>
+    <h2 style="font-size: 48px;">Shop</h2>
     <button class="button" id="clickUpgrade">Upgrade Click Power (10)</button><br>
     <button class="button" id="autoUpgrade">Buy 1 OPS (50)</button><br>
     <button class="button" id="doubleClick">Double Click Power (100)</button><br>
@@ -160,12 +160,7 @@
 
     function saveGame() {
       const key = isKidsVersion ? "kidsClickerData" : "invincibleClickerData";
-      const saveData = {
-        points,
-        clickPower,
-        ops,
-        opsMultiplier
-      };
+      const saveData = { points, clickPower, ops, opsMultiplier };
       localStorage.setItem(key, JSON.stringify(saveData));
       alert("Game Saved!");
     }
@@ -237,7 +232,7 @@
       updateUI();
     }, 1000);
 
-    setMode(false); // Default to Omni-Man version
+    setMode(false); // Start in normal mode
   </script>
 </body>
 </html>
