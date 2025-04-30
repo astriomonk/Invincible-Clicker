@@ -117,12 +117,10 @@
   </div>
 
   <script>
-    // Game state
     let points = 0;
     let clickPower = 1;
     let ops = 0;
     let opsMultiplier = 1;
-
     let isKidsVersion = false;
 
     const character = document.getElementById("character");
@@ -143,7 +141,6 @@
     const saveBtn = document.getElementById("saveBtn");
     const kidsBtn = document.getElementById("kidsBtn");
 
-    // Load game state
     function loadGame() {
       const key = isKidsVersion ? "kidsClickerData" : "invincibleClickerData";
       const data = JSON.parse(localStorage.getItem(key));
@@ -161,7 +158,6 @@
       updateUI();
     }
 
-    // Save game state
     function saveGame() {
       const key = isKidsVersion ? "kidsClickerData" : "invincibleClickerData";
       const saveData = {
@@ -181,13 +177,8 @@
 
     function setMode(kids) {
       isKidsVersion = kids;
-      if (kids) {
-        title.textContent = "Invincible Clicker - Kids Version";
-        character.src = "invincible-head.png.png";
-      } else {
-        title.textContent = "Invincible Clicker";
-        character.src = "omni.png.png";
-      }
+      title.textContent = "Invincible Clicker";
+      character.src = kids ? "invincible-head.png.png" : "omni.png.png";
       loadGame();
     }
 
@@ -246,8 +237,7 @@
       updateUI();
     }, 1000);
 
-    // Initial mode
-    setMode(false); // Start in regular Omni-Man mode
+    setMode(false); // Default to Omni-Man version
   </script>
 </body>
 </html>
