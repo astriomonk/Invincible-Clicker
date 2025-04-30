@@ -1,238 +1,398 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Invincible Clicker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      overflow: hidden;
       background: url('sky-image.png') no-repeat center center fixed;
       background-size: cover;
-      font-family: 'Arial', sans-serif;
-      color: white;
+      font-family: Arial, sans-serif;
       text-align: center;
-      user-select: none;
+      color: #fff;
+      overflow-x: hidden;
       touch-action: manipulation;
     }
 
     h1 {
-      font-size: 72px;
-      margin: 40px 0 20px;
-      color: yellow;
+      background-color: yellow;
+      color: black;
+      font-size: 3em;
+      margin: 0;
+      padding: 20px;
     }
 
-    #character {
-      width: 400px;
+    .counter {
+      font-size: 2em;
+      margin: 20px 0;
+    }
+
+    .click-img {
+      width: 300px;
+      max-width: 90%;
       cursor: pointer;
       transition: transform 0.1s ease;
     }
 
-    #character:active {
-      transform: scale(1.1);
-    }
-
-    #points {
-      font-size: 36px;
-      margin: 30px 0;
+    .click-img:active {
+      transform: scale(0.95);
     }
 
     .button {
-      font-size: 28px;
-      padding: 16px 32px;
-      margin: 20px;
-      background: #ff4747;
+      padding: 10px 20px;
+      font-size: 1.2em;
+      margin: 10px;
       border: none;
       border-radius: 10px;
-      color: white;
       cursor: pointer;
     }
 
-    .button:hover {
-      background: #ff2a2a;
-    }
-
-    #saveBtn, #kidsBtn {
-      position: absolute;
-      padding: 12px 24px;
-      font-size: 22px;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      z-index: 10;
-    }
-
-    #saveBtn {
-      top: 20px;
-      right: 20px;
-      background: #ffaa00;
-      color: black;
-    }
-
-    #saveBtn:hover {
-      background: #ffc107;
-    }
-
-    #kidsBtn {
-      top: 20px;
-      left: 20px;
-      background: #00bbff;
-      color: black;
-    }
-
-    #kidsBtn:hover {
-      background: #33ccff;
-    }
-
-    #game, #shop {
+    .shop, .clicker {
       display: none;
     }
 
-    #game.active, #shop.active {
+    .shop.visible, .clicker.visible {
       display: block;
     }
+
+    #top-buttons {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      position: absolute;
+      width: 100%;
+      top: 0;
+    }
+
+    #top-buttons .button {
+      background-color: #222;
+      color: white;
+    }
+
+    .upgrade {
+      background-color: rgba(255,255,255,0.1);
+      padding: 10px;
+      margin: 10px auto;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 10px;
+    }
+
   </style>
 </head>
 <body>
-  <button id="kidsBtn">Kids Version</button>
-  <button id="saveBtn">Save</button>
-  <h1 id="title">Invincible Clicker</h1>
 
-  <div id="game" class="active">
-    <img id="character" src="omni.png.png" alt="Character">
-    <div id="points">Omni-Points: 0</div>
-    <button class="button" id="shopBtn">Shop</button>
+  <div id="top-buttons">
+    <button class="button" onclick="saveGame()">Save</button>
+    <button class="button" onclick="toggleVersion()">Kids Version</button>
+    <button class="button" onclick="toggleShop()">Shop</button>
   </div>
 
-  <div id="shop">
-    <h2 style="font-size: 48px;">Shop</h2>
-    <button class="button" id="clickUpgrade">Upgrade Click Power (10)</button><br>
-    <button class="button" id="autoUpgrade">Buy 1 OPS (50)</button><br>
-    <button class="button" id="doubleClick">Double Click Power (100)</button><br>
-    <button class="button" id="boostAuto">Double OPS (200)</button><br>
-    <button class="button" id="backBtn">Clicker</button>
+  <h1 id="game-title">Invincible Clicker</h1>
+
+  <div class="counter" id="pointsDisplay">Omni-Points: 0</div>
+
+  <img src="Omni.png.png" alt="Omni-Man" id="character" class="click-img" />
+
+  <div class="shop" id="shop">
+    <h2>Shop</h2>
+    <div class="upgrade">
+      <p>+1 Points Per Click - Cost: 10</p>
+      <button onclick="buyUpgrade('clickPower')">Buy</button>
+    </div>
+    <div class="upgrade">
+      <p>+1 Omni-Points per Second - Cost: 25</p>
+      <button onclick="buyUpgrade('autoClick')">Buy</button>
+    </div>
+    <div class="upgrade">
+      <p>+5 Omni-Points per Second - Cost: 100</p>
+      <button onclick="buyUpgrade('bigAutoClick')">Buy</button>
+    </div>
+    <button class="button" onclick="toggleShop()">Clicker</button>
   </div>
+
+  <audio id="omniSound" src="are-you-sure.mp3"></audio>
+  <audio id="markSound" src="pretty-sure.mp3"></audio>
 
   <script>
     let points = 0;
     let clickPower = 1;
     let ops = 0;
-    let opsMultiplier = 1;
-    let isKidsVersion = false;
+    let isKids = false;
 
-    const character = document.getElementById("character");
-    const pointsDisplay = document.getElementById("points");
-    const title = document.getElementById("title");
-
-    const clickUpgradeBtn = document.getElementById("clickUpgrade");
-    const autoUpgradeBtn = document.getElementById("autoUpgrade");
-    const doubleClickBtn = document.getElementById("doubleClick");
-    const boostAutoBtn = document.getElementById("boostAuto");
-
-    const shopBtn = document.getElementById("shopBtn");
-    const backBtn = document.getElementById("backBtn");
-
-    const gameDiv = document.getElementById("game");
-    const shopDiv = document.getElementById("shop");
-
-    const saveBtn = document.getElementById("saveBtn");
-    const kidsBtn = document.getElementById("kidsBtn");
-
-    function loadGame() {
-      const key = isKidsVersion ? "kidsClickerData" : "invincibleClickerData";
-      const data = JSON.parse(localStorage.getItem(key));
-      if (data) {
-        points = data.points || 0;
-        clickPower = data.clickPower || 1;
-        ops = data.ops || 0;
-        opsMultiplier = data.opsMultiplier || 1;
-      } else {
-        points = 0;
-        clickPower = 1;
-        ops = 0;
-        opsMultiplier = 1;
-      }
-      updateUI();
-    }
-
-    function saveGame() {
-      const key = isKidsVersion ? "kidsClickerData" : "invincibleClickerData";
-      const saveData = { points, clickPower, ops, opsMultiplier };
-      localStorage.setItem(key, JSON.stringify(saveData));
-      alert("Game Saved!");
-    }
+    const pointsDisplay = document.getElementById('pointsDisplay');
+    const title = document.getElementById('game-title');
+    const character = document.getElementById('character');
+    const shop = document.getElementById('shop');
+    const omniSound = document.getElementById('omniSound');
+    const markSound = document.getElementById('markSound');
 
     function updateUI() {
-      const label = isKidsVersion ? "Mark-Points" : "Omni-Points";
-      pointsDisplay.textContent = `${label}: ${Math.floor(points)}`;
+      pointsDisplay.textContent = isKids ? `Mark-Points: ${points}` : `Omni-Points: ${points}`;
     }
 
-    function setMode(kids) {
-      isKidsVersion = kids;
-      title.textContent = "Invincible Clicker";
-      character.src = kids ? "invincible-head.png.png" : "omni.png.png";
-      loadGame();
+    function toggleVersion() {
+      isKids = !isKids;
+      title.textContent = isKids ? 'Invincible Clicker' : 'Invincible Clicker';
+      character.src = isKids ? 'invincible-head.png.png' : 'Omni.png.png';
+      updateUI();
     }
 
-    character.addEventListener("click", () => {
+    function toggleShop() {
+      shop.classList.toggle('visible');
+    }
+
+    character.addEventListener('click', () => {
       points += clickPower;
       updateUI();
+      if (isKids) {
+        markSound.currentTime = 0;
+        markSound.play();
+      } else {
+        omniSound.currentTime = 0;
+        omniSound.play();
+      }
     });
 
-    clickUpgradeBtn.addEventListener("click", () => {
-      if (points >= 10) {
+    function buyUpgrade(type) {
+      if (type === 'clickPower' && points >= 10) {
         points -= 10;
-        clickPower++;
-        updateUI();
-      }
-    });
-
-    autoUpgradeBtn.addEventListener("click", () => {
-      if (points >= 50) {
-        points -= 50;
-        ops++;
-        updateUI();
-      }
-    });
-
-    doubleClickBtn.addEventListener("click", () => {
-      if (points >= 100) {
+        clickPower += 1;
+      } else if (type === 'autoClick' && points >= 25) {
+        points -= 25;
+        ops += 1;
+      } else if (type === 'bigAutoClick' && points >= 100) {
         points -= 100;
-        clickPower *= 2;
-        updateUI();
+        ops += 5;
       }
-    });
-
-    boostAutoBtn.addEventListener("click", () => {
-      if (points >= 200) {
-        points -= 200;
-        opsMultiplier *= 2;
-        updateUI();
-      }
-    });
-
-    shopBtn.addEventListener("click", () => {
-      gameDiv.classList.remove("active");
-      shopDiv.classList.add("active");
-    });
-
-    backBtn.addEventListener("click", () => {
-      shopDiv.classList.remove("active");
-      gameDiv.classList.add("active");
-    });
-
-    saveBtn.addEventListener("click", saveGame);
-    kidsBtn.addEventListener("click", () => setMode(!isKidsVersion));
+      updateUI();
+    }
 
     setInterval(() => {
-      points += ops * opsMultiplier;
+      points += ops;
       updateUI();
     }, 1000);
 
-    setMode(false); // Start in normal mode
+    function saveGame() {
+      localStorage.setItem('invincible-points', points);
+      localStorage.setItem('invincible-clickPower', clickPower);
+      localStorage.setItem('invincible-ops', ops);
+      localStorage.setItem('invincible-kids', isKids);
+      alert('Game Saved!');
+    }
+
+    function loadGame() {
+      points = parseInt(localStorage.getItem('invincible-points')) || 0;
+      clickPower = parseInt(localStorage.getItem('invincible-clickPower')) || 1;
+      ops = parseInt(localStorage.getItem('invincible-ops')) || 0;
+      isKids = localStorage.getItem('invincible-kids') === 'true';
+      character.src = isKids ? 'invincible-head.png.png' : 'Omni.png.png';
+      updateUI();
+    }
+
+    loadGame();
   </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Invincible Clicker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <style>
+    body {
+      margin: 0;
+      background: url('sky-image.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      color: #fff;
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
+
+    h1 {
+      background-color: yellow;
+      color: black;
+      font-size: 3em;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .counter {
+      font-size: 2em;
+      margin: 20px 0;
+    }
+
+    .click-img {
+      width: 300px;
+      max-width: 90%;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .click-img:active {
+      transform: scale(0.95);
+    }
+
+    .button {
+      padding: 10px 20px;
+      font-size: 1.2em;
+      margin: 10px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .shop, .clicker {
+      display: none;
+    }
+
+    .shop.visible, .clicker.visible {
+      display: block;
+    }
+
+    #top-buttons {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      position: absolute;
+      width: 100%;
+      top: 0;
+    }
+
+    #top-buttons .button {
+      background-color: #222;
+      color: white;
+    }
+
+    .upgrade {
+      background-color: rgba(255,255,255,0.1);
+      padding: 10px;
+      margin: 10px auto;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 10px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div id="top-buttons">
+    <button class="button" onclick="saveGame()">Save</button>
+    <button class="button" onclick="toggleVersion()">Kids Version</button>
+    <button class="button" onclick="toggleShop()">Shop</button>
+  </div>
+
+  <h1 id="game-title">Invincible Clicker</h1>
+
+  <div class="counter" id="pointsDisplay">Omni-Points: 0</div>
+
+  <img src="Omni.png.png" alt="Omni-Man" id="character" class="click-img" />
+
+  <div class="shop" id="shop">
+    <h2>Shop</h2>
+    <div class="upgrade">
+      <p>+1 Points Per Click - Cost: 10</p>
+      <button onclick="buyUpgrade('clickPower')">Buy</button>
+    </div>
+    <div class="upgrade">
+      <p>+1 Omni-Points per Second - Cost: 25</p>
+      <button onclick="buyUpgrade('autoClick')">Buy</button>
+    </div>
+    <div class="upgrade">
+      <p>+5 Omni-Points per Second - Cost: 100</p>
+      <button onclick="buyUpgrade('bigAutoClick')">Buy</button>
+    </div>
+    <button class="button" onclick="toggleShop()">Clicker</button>
+  </div>
+
+  <audio id="omniSound" src="are-you-sure.mp3"></audio>
+  <audio id="markSound" src="pretty-sure.mp3"></audio>
+
+  <script>
+    let points = 0;
+    let clickPower = 1;
+    let ops = 0;
+    let isKids = false;
+
+    const pointsDisplay = document.getElementById('pointsDisplay');
+    const title = document.getElementById('game-title');
+    const character = document.getElementById('character');
+    const shop = document.getElementById('shop');
+    const omniSound = document.getElementById('omniSound');
+    const markSound = document.getElementById('markSound');
+
+    function updateUI() {
+      pointsDisplay.textContent = isKids ? `Mark-Points: ${points}` : `Omni-Points: ${points}`;
+    }
+
+    function toggleVersion() {
+      isKids = !isKids;
+      title.textContent = isKids ? 'Invincible Clicker' : 'Invincible Clicker';
+      character.src = isKids ? 'invincible-head.png.png' : 'Omni.png.png';
+      updateUI();
+    }
+
+    function toggleShop() {
+      shop.classList.toggle('visible');
+    }
+
+    character.addEventListener('click', () => {
+      points += clickPower;
+      updateUI();
+      if (isKids) {
+        markSound.currentTime = 0;
+        markSound.play();
+      } else {
+        omniSound.currentTime = 0;
+        omniSound.play();
+      }
+    });
+
+    function buyUpgrade(type) {
+      if (type === 'clickPower' && points >= 10) {
+        points -= 10;
+        clickPower += 1;
+      } else if (type === 'autoClick' && points >= 25) {
+        points -= 25;
+        ops += 1;
+      } else if (type === 'bigAutoClick' && points >= 100) {
+        points -= 100;
+        ops += 5;
+      }
+      updateUI();
+    }
+
+    setInterval(() => {
+      points += ops;
+      updateUI();
+    }, 1000);
+
+    function saveGame() {
+      localStorage.setItem('invincible-points', points);
+      localStorage.setItem('invincible-clickPower', clickPower);
+      localStorage.setItem('invincible-ops', ops);
+      localStorage.setItem('invincible-kids', isKids);
+      alert('Game Saved!');
+    }
+
+    function loadGame() {
+      points = parseInt(localStorage.getItem('invincible-points')) || 0;
+      clickPower = parseInt(localStorage.getItem('invincible-clickPower')) || 1;
+      ops = parseInt(localStorage.getItem('invincible-ops')) || 0;
+      isKids = localStorage.getItem('invincible-kids') === 'true';
+      character.src = isKids ? 'invincible-head.png.png' : 'Omni.png.png';
+      updateUI();
+    }
+
+    loadGame();
+  </script>
+
 </body>
 </html>
