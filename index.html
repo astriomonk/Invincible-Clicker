@@ -15,6 +15,7 @@
     h1 {
       font-size: 48px;
       margin-bottom: 20px;
+      color: yellow;
     }
 
     #omni {
@@ -27,12 +28,13 @@
       transform: scale(1.1);
     }
 
-    #clicks {
+    #points {
       font-size: 24px;
       margin: 20px 0;
     }
 
-    #upgrade {
+    .upgrade {
+      margin: 10px;
       padding: 10px 20px;
       font-size: 18px;
       background: #ff4747;
@@ -42,7 +44,7 @@
       cursor: pointer;
     }
 
-    #upgrade:hover {
+    .upgrade:hover {
       background: #ff2a2a;
     }
   </style>
@@ -50,33 +52,72 @@
 <body>
   <h1>Invincible Clicker</h1>
   <img id="omni" src="omni.png.png" alt="THICC Omni-Man">
-  <div id="clicks">Clicks: 0</div>
-  <button id="upgrade">Upgrade Click Power (10 clicks)</button>
+  <div id="points">Omni-Points: 0</div>
+
+  <button class="upgrade" id="clickUpgrade">Upgrade Click Power (10 points)</button><br>
+  <button class="upgrade" id="autoUpgrade">Buy 1 OPS (50 points)</button><br>
+  <button class="upgrade" id="doubleClick">Double Click Power (100 points)</button><br>
+  <button class="upgrade" id="boostAuto">Double OPS (200 points)</button>
 
   <script>
-    let clicks = 0;
+    let points = 0;
     let clickPower = 1;
+    let ops = 0;
+    let opsMultiplier = 1;
 
     const omni = document.getElementById("omni");
-    const clickDisplay = document.getElementById("clicks");
-    const upgradeButton = document.getElementById("upgrade");
+    const pointsDisplay = document.getElementById("points");
+
+    const clickUpgradeBtn = document.getElementById("clickUpgrade");
+    const autoUpgradeBtn = document.getElementById("autoUpgrade");
+    const doubleClickBtn = document.getElementById("doubleClick");
+    const boostAutoBtn = document.getElementById("boostAuto");
 
     omni.addEventListener("click", () => {
-      clicks += clickPower;
+      points += clickPower;
       updateUI();
     });
 
-    upgradeButton.addEventListener("click", () => {
-      if (clicks >= 10) {
-        clicks -= 10;
+    clickUpgradeBtn.addEventListener("click", () => {
+      if (points >= 10) {
+        points -= 10;
         clickPower++;
         updateUI();
       }
     });
 
+    autoUpgradeBtn.addEventListener("click", () => {
+      if (points >= 50) {
+        points -= 50;
+        ops += 1;
+        updateUI();
+      }
+    });
+
+    doubleClickBtn.addEventListener("click", () => {
+      if (points >= 100) {
+        points -= 100;
+        clickPower *= 2;
+        updateUI();
+      }
+    });
+
+    boostAutoBtn.addEventListener("click", () => {
+      if (points >= 200) {
+        points -= 200;
+        opsMultiplier *= 2;
+        updateUI();
+      }
+    });
+
     function updateUI() {
-      clickDisplay.textContent = "Clicks: " + clicks;
+      pointsDisplay.textContent = "Omni-Points: " + Math.floor(points);
     }
+
+    setInterval(() => {
+      points += ops * opsMultiplier;
+      updateUI();
+    }, 1000);
   </script>
 </body>
 </html>
