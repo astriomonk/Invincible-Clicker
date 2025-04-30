@@ -7,7 +7,7 @@
     body {
       margin: 0;
       padding: 0;
-      background: url('sky.png') no-repeat center center fixed;
+      background: url('sky-image.png') no-repeat center center fixed;
       background-size: cover;
       color: white;
       font-family: 'Arial', sans-serif;
@@ -25,7 +25,7 @@
       padding-top: 50px;
     }
 
-    #game.active, #shop.active {
+    .active {
       display: block;
     }
 
@@ -63,19 +63,20 @@
 <body>
   <h1>Invincible Clicker</h1>
 
+  <!-- Clicker Game UI -->
   <div id="game" class="active">
     <img id="omni" src="omni.png.png" alt="THICC Omni-Man">
     <div id="points">Omni-Points: 0</div>
+    <button class="button" id="shopBtn">Shop</button>
+  </div>
+
+  <!-- Shop UI -->
+  <div id="shop">
+    <h2>Shop</h2>
     <button class="button" id="clickUpgrade">Upgrade Click Power (10 points)</button><br>
     <button class="button" id="autoUpgrade">Buy 1 OPS (50 points)</button><br>
     <button class="button" id="doubleClick">Double Click Power (100 points)</button><br>
     <button class="button" id="boostAuto">Double OPS (200 points)</button><br>
-    <button class="button" id="shopBtn">Shop</button>
-  </div>
-
-  <div id="shop">
-    <h2>Shop</h2>
-    <p>Coming soon: More upgrades!</p>
     <button class="button" id="backBtn">Clicker</button>
   </div>
 
