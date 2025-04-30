@@ -5,17 +5,28 @@
   <title>Invincible Clicker</title>
   <style>
     body {
-      background: #0d0d0d;
+      margin: 0;
+      padding: 0;
+      background: url('sky.png') no-repeat center center fixed;
+      background-size: cover;
       color: white;
       font-family: 'Arial', sans-serif;
       text-align: center;
-      padding-top: 50px;
     }
 
     h1 {
       font-size: 48px;
-      margin-bottom: 20px;
+      margin: 20px 0;
       color: yellow;
+    }
+
+    #game, #shop {
+      display: none;
+      padding-top: 50px;
+    }
+
+    #game.active, #shop.active {
+      display: block;
     }
 
     #omni {
@@ -33,7 +44,7 @@
       margin: 20px 0;
     }
 
-    .upgrade {
+    .button {
       margin: 10px;
       padding: 10px 20px;
       font-size: 18px;
@@ -44,20 +55,29 @@
       cursor: pointer;
     }
 
-    .upgrade:hover {
+    .button:hover {
       background: #ff2a2a;
     }
   </style>
 </head>
 <body>
   <h1>Invincible Clicker</h1>
-  <img id="omni" src="omni.png.png" alt="THICC Omni-Man">
-  <div id="points">Omni-Points: 0</div>
 
-  <button class="upgrade" id="clickUpgrade">Upgrade Click Power (10 points)</button><br>
-  <button class="upgrade" id="autoUpgrade">Buy 1 OPS (50 points)</button><br>
-  <button class="upgrade" id="doubleClick">Double Click Power (100 points)</button><br>
-  <button class="upgrade" id="boostAuto">Double OPS (200 points)</button>
+  <div id="game" class="active">
+    <img id="omni" src="omni.png.png" alt="THICC Omni-Man">
+    <div id="points">Omni-Points: 0</div>
+    <button class="button" id="clickUpgrade">Upgrade Click Power (10 points)</button><br>
+    <button class="button" id="autoUpgrade">Buy 1 OPS (50 points)</button><br>
+    <button class="button" id="doubleClick">Double Click Power (100 points)</button><br>
+    <button class="button" id="boostAuto">Double OPS (200 points)</button><br>
+    <button class="button" id="shopBtn">Shop</button>
+  </div>
+
+  <div id="shop">
+    <h2>Shop</h2>
+    <p>Coming soon: More upgrades!</p>
+    <button class="button" id="backBtn">Clicker</button>
+  </div>
 
   <script>
     let points = 0;
@@ -72,6 +92,12 @@
     const autoUpgradeBtn = document.getElementById("autoUpgrade");
     const doubleClickBtn = document.getElementById("doubleClick");
     const boostAutoBtn = document.getElementById("boostAuto");
+
+    const shopBtn = document.getElementById("shopBtn");
+    const backBtn = document.getElementById("backBtn");
+
+    const gameDiv = document.getElementById("game");
+    const shopDiv = document.getElementById("shop");
 
     omni.addEventListener("click", () => {
       points += clickPower;
@@ -108,6 +134,16 @@
         opsMultiplier *= 2;
         updateUI();
       }
+    });
+
+    shopBtn.addEventListener("click", () => {
+      gameDiv.classList.remove("active");
+      shopDiv.classList.add("active");
+    });
+
+    backBtn.addEventListener("click", () => {
+      shopDiv.classList.remove("active");
+      gameDiv.classList.add("active");
     });
 
     function updateUI() {
