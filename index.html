@@ -29,13 +29,13 @@
       display: block;
     }
 
-    #omni {
+    #character {
       width: 300px;
       cursor: pointer;
       transition: transform 0.1s ease;
     }
 
-    #omni:active {
+    #character:active {
       transform: scale(1.1);
     }
 
@@ -75,15 +75,33 @@
     #saveBtn:hover {
       background: #ffc107;
     }
+
+    #kidsBtn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 8px 16px;
+      background: #00bbff;
+      color: black;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #kidsBtn:hover {
+      background: #33ccff;
+    }
   </style>
 </head>
 <body>
+  <button id="kidsBtn">Kids Version</button>
   <button id="saveBtn">Save</button>
-  <h1>Invincible Clicker</h1>
+  <h1 id="title">Invincible Clicker</h1>
 
   <!-- Game Screen -->
   <div id="game" class="active">
-    <img id="omni" src="omni.png.png" alt="THICC Omni-Man">
+    <img id="character" src="omni.png.png" alt="Character">
     <div id="points">Omni-Points: 0</div>
     <button class="button" id="shopBtn">Shop</button>
   </div>
@@ -91,21 +109,25 @@
   <!-- Shop Screen -->
   <div id="shop">
     <h2>Shop</h2>
-    <button class="button" id="clickUpgrade">Upgrade Click Power (10 points)</button><br>
-    <button class="button" id="autoUpgrade">Buy 1 OPS (50 points)</button><br>
-    <button class="button" id="doubleClick">Double Click Power (100 points)</button><br>
-    <button class="button" id="boostAuto">Double OPS (200 points)</button><br>
+    <button class="button" id="clickUpgrade">Upgrade Click Power (10)</button><br>
+    <button class="button" id="autoUpgrade">Buy 1 OPS (50)</button><br>
+    <button class="button" id="doubleClick">Double Click Power (100)</button><br>
+    <button class="button" id="boostAuto">Double OPS (200)</button><br>
     <button class="button" id="backBtn">Clicker</button>
   </div>
 
   <script>
+    // Game state
     let points = 0;
     let clickPower = 1;
     let ops = 0;
     let opsMultiplier = 1;
 
-    const omni = document.getElementById("omni");
+    let isKidsVersion = false;
+
+    const character = document.getElementById("character");
     const pointsDisplay = document.getElementById("points");
+    const title = document.getElementById("title");
 
     const clickUpgradeBtn = document.getElementById("clickUpgrade");
     const autoUpgradeBtn = document.getElementById("autoUpgrade");
@@ -119,20 +141,57 @@
     const shopDiv = document.getElementById("shop");
 
     const saveBtn = document.getElementById("saveBtn");
+    const kidsBtn = document.getElementById("kidsBtn");
 
-    // Load from localStorage if saved data exists
-    window.onload = function () {
-      if (localStorage.getItem("invincibleClickerData")) {
-        const data = JSON.parse(localStorage.getItem("invincibleClickerData"));
+    // Load game state
+    function loadGame() {
+      const key = isKidsVersion ? "kidsClickerData" : "invincibleClickerData";
+      const data = JSON.parse(localStorage.getItem(key));
+      if (data) {
         points = data.points || 0;
         clickPower = data.clickPower || 1;
         ops = data.ops || 0;
         opsMultiplier = data.opsMultiplier || 1;
-        updateUI();
+      } else {
+        points = 0;
+        clickPower = 1;
+        ops = 0;
+        opsMultiplier = 1;
       }
-    };
+      updateUI();
+    }
 
-    omni.addEventListener("click", () => {
+    // Save game state
+    function saveGame() {
+      const key = isKidsVersion ? "kidsClickerData" : "invincibleClickerData";
+      const saveData = {
+        points,
+        clickPower,
+        ops,
+        opsMultiplier
+      };
+      localStorage.setItem(key, JSON.stringify(saveData));
+      alert("Game Saved!");
+    }
+
+    function updateUI() {
+      const label = isKidsVersion ? "Mark-Points" : "Omni-Points";
+      pointsDisplay.textContent = `${label}: ${Math.floor(points)}`;
+    }
+
+    function setMode(kids) {
+      isKidsVersion = kids;
+      if (kids) {
+        title.textContent = "Invincible Clicker - Kids Version";
+        character.src = "invincible-head.png.png";
+      } else {
+        title.textContent = "Invincible Clicker";
+        character.src = "omni.png.png";
+      }
+      loadGame();
+    }
+
+    character.addEventListener("click", () => {
       points += clickPower;
       updateUI();
     });
@@ -179,25 +238,16 @@
       gameDiv.classList.add("active");
     });
 
-    saveBtn.addEventListener("click", () => {
-      const saveData = {
-        points: points,
-        clickPower: clickPower,
-        ops: ops,
-        opsMultiplier: opsMultiplier
-      };
-      localStorage.setItem("invincibleClickerData", JSON.stringify(saveData));
-      alert("Game Saved!");
-    });
-
-    function updateUI() {
-      pointsDisplay.textContent = "Omni-Points: " + Math.floor(points);
-    }
+    saveBtn.addEventListener("click", saveGame);
+    kidsBtn.addEventListener("click", () => setMode(!isKidsVersion));
 
     setInterval(() => {
       points += ops * opsMultiplier;
       updateUI();
     }, 1000);
+
+    // Initial mode
+    setMode(false); // Start in regular Omni-Man mode
   </script>
 </body>
 </html>
