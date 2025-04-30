@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Invincible Clicker</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: url('sky-image.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+    }
+    h1 {
+      color: yellow;
+      font-size: 2.5em;
+      margin-top: 20px;
+    }
+    #game, #markLevel {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    .clicker-img {
+      width: 200px;
+      height: auto;
+      cursor: pointer;
+    }
+    .upgrade-btn {
+      font-size: 1.2em;
+      margin: 10px;
+      padding: 15px;
+    }
+    .floating-head {
+      position: absolute;
+      width: 80px;
+      height: auto;
+      animation: floatHead 10s linear infinite alternate;
+      cursor: pointer;
+    }
+    @keyframes floatHead {
+      0% { top: 10%; left: 10%; }
+      25% { top: 20%; left: 80%; }
+      50% { top: 60%; left: 60%; }
+      75% { top: 30%; left: 30%; }
+      100% { top: 10%; left: 10%; }
+    }
+    #videoContainer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    #videoContainer iframe {
+      width: 80%;
+      height: 80%;
+    }
+    .switch-btn {
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Invincible Clicker</h1>
+  <audio autoplay loop>
+    <source src="feel-it.mp3" type="audio/mp3">
+  </audio>
+
+  <div id="levelSelect">
+    <button class="switch-btn" onclick="switchLevel('game')">Go to Omni-Man Level</button>
+    <button class="switch-btn" onclick="switchLevel('markLevel')">Go to Invincible Level</button>
+  </div>
+
+  <div id="game" class="active">
+    <img src="omni.png" class="clicker-img" onclick="addPoints(1)" alt="Omni-Man">
+    <div id="points">Omni-Points: 0</div>
+    <div id="pointsPerSec">Omni-Points per sec: 0</div>
+    <button class="upgrade-btn" onclick="buyUpgrade()">Buy Upgrade (+1/sec)</button>
+    <div class="floating-head" onclick="toggleVideo()">
+      <img src="invincible.png" width="80" />
+    </div>
+  </div>
+
+  <div id="markLevel">
+    <img src="invincible-head.png" class="clicker-img" onclick="addMarkPoints(1)" alt="Invincible Head">
+    <div id="markPoints">Mark-Points: 0</div>
+    <div class="floating-head" onclick="toggleVideo()">
+      <img src="omni.png" width="80" />
+    </div>
+  </div>
+
+  <div id="videoContainer" onclick="toggleVideo()">
+    <iframe id="trainVideo" src="" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+  <script>
+    let points = parseInt(localStorage.getItem('points')) || 0;
+    let pointsPerSec = parseInt(localStorage.getItem('pointsPerSec')) || 0;
+    let markPoints = parseInt(localStorage.getItem('markPoints')) || 0;
+
+    function updateDisplay() {
+      document.getElementById('points').innerText = `Omni-Points: ${points}`;
+      document.getElementById('pointsPerSec').innerText = `Omni-Points per sec: ${pointsPerSec}`;
+      document.getElementById('markPoints').innerText = `Mark-Points: ${markPoints}`;
+    }
+
+    function addPoints(val) {
+      points += val;
+      localStorage.setItem('points', points);
+      updateDisplay();
+    }
+
+    function buyUpgrade() {
+      if (points >= 10) {
+        points -= 10;
+        pointsPerSec++;
+        localStorage.setItem('points', points);
+        localStorage.setItem('pointsPerSec', pointsPerSec);
+        updateDisplay();
+      }
+    }
+
+    setInterval(() => {
+      points += pointsPerSec;
+      localStorage.setItem('points', points);
+      updateDisplay();
+    }, 1000);
+
+    function addMarkPoints(val) {
+      markPoints += val;
+      localStorage.setItem('markPoints', markPoints);
+      updateDisplay();
+    }
+
+    function toggleVideo() {
+      const video = document.getElementById('videoContainer');
+      const iframe = document.getElementById('trainVideo');
+      if (video.style.display === 'flex') {
+        iframe.src = '';
+        video.style.display = 'none';
+      } else {
+        iframe.src = 'https://www.youtube.com/embed/p1y85kNfBBE?autoplay=1';
+        video.style.display = 'flex';
+      }
+    }
+
+    function switchLevel(levelId) {
+      document.getElementById('game').classList.remove('active');
+      document.getElementById('markLevel').classList.remove('active');
+      document.getElementById(levelId).classList.add('active');
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>
