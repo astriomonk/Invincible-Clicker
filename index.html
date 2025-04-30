@@ -58,12 +58,30 @@
     .button:hover {
       background: #ff2a2a;
     }
+
+    #saveBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 8px 16px;
+      background: #ffaa00;
+      color: black;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #saveBtn:hover {
+      background: #ffc107;
+    }
   </style>
 </head>
 <body>
+  <button id="saveBtn">Save</button>
   <h1>Invincible Clicker</h1>
 
-  <!-- Main Game Screen -->
+  <!-- Game Screen -->
   <div id="game" class="active">
     <img id="omni" src="omni.png.png" alt="THICC Omni-Man">
     <div id="points">Omni-Points: 0</div>
@@ -100,8 +118,19 @@
     const gameDiv = document.getElementById("game");
     const shopDiv = document.getElementById("shop");
 
-    // Show the main game screen by default
-    gameDiv.classList.add("active");
+    const saveBtn = document.getElementById("saveBtn");
+
+    // Load from localStorage if saved data exists
+    window.onload = function () {
+      if (localStorage.getItem("invincibleClickerData")) {
+        const data = JSON.parse(localStorage.getItem("invincibleClickerData"));
+        points = data.points || 0;
+        clickPower = data.clickPower || 1;
+        ops = data.ops || 0;
+        opsMultiplier = data.opsMultiplier || 1;
+        updateUI();
+      }
+    };
 
     omni.addEventListener("click", () => {
       points += clickPower;
@@ -150,11 +179,21 @@
       gameDiv.classList.add("active");
     });
 
+    saveBtn.addEventListener("click", () => {
+      const saveData = {
+        points: points,
+        clickPower: clickPower,
+        ops: ops,
+        opsMultiplier: opsMultiplier
+      };
+      localStorage.setItem("invincibleClickerData", JSON.stringify(saveData));
+      alert("Game Saved!");
+    });
+
     function updateUI() {
       pointsDisplay.textContent = "Omni-Points: " + Math.floor(points);
     }
 
-    // Add passive Omni-Points per second
     setInterval(() => {
       points += ops * opsMultiplier;
       updateUI();
