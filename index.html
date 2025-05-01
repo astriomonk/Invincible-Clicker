@@ -3,8 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <title>Invincible Clicker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
+    html, body {
+      touch-action: manipulation;
+      -ms-touch-action: manipulation;
+      overscroll-behavior: none;
+    }
+
     body {
       margin: 0;
       font-family: sans-serif;
@@ -71,11 +77,13 @@
       font-size: 1.2em;
     }
 
-    .bottom-button {
+    .bottom-buttons {
       position: fixed;
       bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
       z-index: 1000;
     }
 
@@ -120,8 +128,9 @@
     <button class="button" onclick="toggleShop()">Clicker</button>
   </div>
 
-  <div class="bottom-button">
+  <div class="bottom-buttons">
     <button class="button" onclick="toggleVersion()">Kids Version</button>
+    <button class="button" onclick="resetGame()">Reset</button>
   </div>
 
   <audio id="omniSound" src="are-you-sure.mp3"></audio>
@@ -129,6 +138,10 @@
   <audio id="buttonClickSound" src="are-you-sure.mp3"></audio>
 
   <script>
+    document.addEventListener('gesturestart', function (e) {
+      e.preventDefault();
+    });
+
     let points = 0;
     let clickPower = 1;
     let rate = 0;
@@ -136,7 +149,6 @@
 
     const pointsDisplay = document.getElementById('pointsDisplay');
     const character = document.getElementById('character');
-    const title = document.getElementById('game-title');
     const rateLabel = document.getElementById('rateLabel');
     const rateLabel2 = document.getElementById('rateLabel2');
     const shop = document.getElementById('shop');
@@ -196,7 +208,6 @@
     }
 
     function saveGame() {
-      playButtonSound();
       localStorage.setItem("invPoints", points);
       localStorage.setItem("invClickPower", clickPower);
       localStorage.setItem("invRate", rate);
@@ -204,12 +215,17 @@
       alert("Game Saved!");
     }
 
+    function resetGame() {
+      localStorage.clear();
+      location.reload();
+    }
+
     function loadGame() {
       points = parseInt(localStorage.getItem("invPoints")) || 0;
       clickPower = parseInt(localStorage.getItem("invClickPower")) || 1;
       rate = parseInt(localStorage.getItem("invRate")) || 0;
       isKids = localStorage.getItem("invKids") === "true";
-      if (isKids) toggleVersion(); // Apply kids mode settings
+      if (isKids) toggleVersion();
       updateUI();
     }
 
@@ -217,6 +233,10 @@
       points += rate;
       updateUI();
     }, 1000);
+
+    setInterval(() => {
+      saveGame();
+    }, 10000); // Auto-save every 10 seconds
 
     loadGame();
   </script>
