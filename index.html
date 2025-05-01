@@ -1,107 +1,36 @@
-<script>
-  document.addEventListener('gesturestart', function (e) {
-    e.preventDefault();
-  });
-
-  let points = 0;
-  let clickPower = 1;
-  let rate = 0;
-  let isKids = false;
-
-  const pointsDisplay = document.getElementById('pointsDisplay');
-  const character = document.getElementById('character');
-  const rateLabel = document.getElementById('rateLabel');
-  const rateLabel2 = document.getElementById('rateLabel2');
-  const shop = document.getElementById('shop');
-
-  const omniSound = document.getElementById('omniSound');
-  const markSound = document.getElementById('markSound');
-  const buttonClickSound = document.getElementById('buttonClickSound');
-
-  function playButtonSound() {
-    buttonClickSound.currentTime = 0;
-    buttonClickSound.play();
-  }
-
-  function updateUI() {
-    pointsDisplay.textContent = isKids ? `Mark-Points: ${points}` : `Omni-Points: ${points}`;
-  }
-
-  character.addEventListener("click", () => {
-    points += clickPower;
-    updateUI();
-    if (isKids) {
-      markSound.currentTime = 0;
-      markSound.play();
-    } else {
-      omniSound.currentTime = 0;
-      omniSound.play();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Invincible Clicker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: url('sky-image.png') no-repeat center center fixed;
+      background-size: cover;
+      overflow-x: hidden;
+      touch-action: manipulation;
     }
-  });
 
-  function toggleVersion() {
-    playButtonSound();
-    isKids = !isKids;
-    character.src = isKids ? "invincible-head.png.png" : "Omni.png";
-    rateLabel.textContent = isKids ? "MPS" : "OPS";
-    rateLabel2.textContent = isKids ? "MPS" : "OPS";
-    updateUI();
-  }
-
-  function toggleShop() {
-    playButtonSound();
-    shop.classList.toggle("visible");
-  }
-
-  function buyUpgrade(type) {
-    playButtonSound();
-    if (type === 'clickPower' && points >= 10) {
-      clickPower++;
-      points -= 10;
-    } else if (type === 'autoClick' && points >= 25) {
-      rate += 1;
-      points -= 25;
-    } else if (type === 'bigAutoClick' && points >= 100) {
-      rate += 5;
-      points -= 100;
+    h1 {
+      background-color: yellow;
+      color: black;
+      font-size: 3em;
+      margin: 0;
+      padding: 20px;
     }
-    updateUI();
-  }
 
-  function saveGame() {
-    localStorage.setItem("invPoints", points);
-    localStorage.setItem("invClickPower", clickPower);
-    localStorage.setItem("invRate", rate);
-    localStorage.setItem("invKids", isKids);
-    alert("Game Saved!");
-  }
-
-  function resetGame() {
-    localStorage.clear();
-    location.reload();
-  }
-
-  function loadGame() {
-    points = parseInt(localStorage.getItem("invPoints")) || 0;
-    clickPower = parseInt(localStorage.getItem("invClickPower")) || 1;
-    rate = parseInt(localStorage.getItem("invRate")) || 0;
-    isKids = localStorage.getItem("invKids") === "true";
-    if (isKids) toggleVersion();
-    updateUI();
-  }
-
-  setInterval(() => {
-    points += rate;
-    updateUI();
-  }, 1000);
-
-  loadGame();
-</script>
-
+    .counter {
+      font-size: 2.5em;
+      margin: 20px 0;
+    }
 
     .click-img {
       width: 300px;
-      max-width: 80vw;
+      max-width: 90vw;
       cursor: pointer;
     }
 
@@ -129,7 +58,7 @@
       background: rgba(0, 0, 0, 0.8);
       padding: 20px;
       margin: 20px auto;
-      max-width: 500px;
+      max-width: 600px;
       border-radius: 15px;
     }
 
@@ -139,7 +68,7 @@
 
     .upgrade {
       margin: 15px 0;
-      font-size: 1.2em;
+      font-size: 1.3em;
     }
 
     .bottom-buttons {
@@ -155,7 +84,6 @@
     @media (max-width: 600px) {
       .button {
         font-size: 1.2em;
-        padding: 8px 16px;
       }
 
       .counter {
@@ -175,7 +103,7 @@
 
   <div class="counter" id="pointsDisplay">Omni-Points: 0</div>
 
-  <img src="Omni.png" alt="Clicker Image" id="character" class="click-img">
+  <img src="Omni.png" alt="Clicker" id="character" class="click-img">
 
   <div class="shop-container" id="shop">
     <div class="upgrade">
@@ -194,13 +122,12 @@
   </div>
 
   <div class="bottom-buttons">
-    <button class="button" onclick="toggleVersion()">Kids Version</button>
+    <button class="button" onclick="unlockInvincible()">Invincible Level (10,000)</button>
     <button class="button" onclick="resetGame()">Reset</button>
   </div>
 
   <audio id="omniSound" src="are-you-sure.mp3"></audio>
   <audio id="markSound" src="pretty-sure.mp3"></audio>
-  <audio id="buttonClickSound" src="are-you-sure.mp3"></audio>
 
   <script>
     document.addEventListener('gesturestart', function (e) {
@@ -210,31 +137,25 @@
     let points = 0;
     let clickPower = 1;
     let rate = 0;
-    let isKids = false;
+    let isInvincible = false;
 
     const pointsDisplay = document.getElementById('pointsDisplay');
     const character = document.getElementById('character');
     const rateLabel = document.getElementById('rateLabel');
     const rateLabel2 = document.getElementById('rateLabel2');
     const shop = document.getElementById('shop');
-
     const omniSound = document.getElementById('omniSound');
     const markSound = document.getElementById('markSound');
-    const buttonClickSound = document.getElementById('buttonClickSound');
-
-    function playButtonSound() {
-      buttonClickSound.currentTime = 0;
-      buttonClickSound.play();
-    }
+    const gameTitle = document.getElementById('game-title');
 
     function updateUI() {
-      pointsDisplay.textContent = isKids ? `Mark-Points: ${points}` : `Omni-Points: ${points}`;
+      pointsDisplay.textContent = isInvincible ? `Mark-Points: ${points}` : `Omni-Points: ${points}`;
     }
 
     character.addEventListener("click", () => {
       points += clickPower;
       updateUI();
-      if (isKids) {
+      if (isInvincible) {
         markSound.currentTime = 0;
         markSound.play();
       } else {
@@ -243,22 +164,11 @@
       }
     });
 
-    function toggleVersion() {
-      playButtonSound();
-      isKids = !isKids;
-      character.src = isKids ? "invincible-head.png.png" : "Omni.png";
-      rateLabel.textContent = isKids ? "MPS" : "OPS";
-      rateLabel2.textContent = isKids ? "MPS" : "OPS";
-      updateUI();
-    }
-
     function toggleShop() {
-      playButtonSound();
       shop.classList.toggle("visible");
     }
 
     function buyUpgrade(type) {
-      playButtonSound();
       if (type === 'clickPower' && points >= 10) {
         clickPower++;
         points -= 10;
@@ -272,11 +182,26 @@
       updateUI();
     }
 
+    function unlockInvincible() {
+      if (!isInvincible && points >= 10000) {
+        points -= 10000;
+        isInvincible = true;
+        character.src = "invincible-head.png.png";
+        rateLabel.textContent = "MPS";
+        rateLabel2.textContent = "MPS";
+        gameTitle.textContent = "Invincible Clicker";
+        updateUI();
+        alert("Invincible Level Unlocked!");
+      } else if (!isInvincible) {
+        alert("You need 10,000 Omni-Points to unlock Invincible Level!");
+      }
+    }
+
     function saveGame() {
       localStorage.setItem("invPoints", points);
       localStorage.setItem("invClickPower", clickPower);
       localStorage.setItem("invRate", rate);
-      localStorage.setItem("invKids", isKids);
+      localStorage.setItem("invUnlocked", isInvincible);
       alert("Game Saved!");
     }
 
@@ -289,19 +214,25 @@
       points = parseInt(localStorage.getItem("invPoints")) || 0;
       clickPower = parseInt(localStorage.getItem("invClickPower")) || 1;
       rate = parseInt(localStorage.getItem("invRate")) || 0;
-      isKids = localStorage.getItem("invKids") === "true";
-      if (isKids) toggleVersion();
+      isInvincible = localStorage.getItem("invUnlocked") === "true";
+      if (isInvincible) {
+        unlockInvincibleWithoutCost();
+      }
       updateUI();
+    }
+
+    function unlockInvincibleWithoutCost() {
+      isInvincible = true;
+      character.src = "invincible-head.png.png";
+      rateLabel.textContent = "MPS";
+      rateLabel2.textContent = "MPS";
+      gameTitle.textContent = "Invincible Clicker";
     }
 
     setInterval(() => {
       points += rate;
       updateUI();
     }, 1000);
-
-    setInterval(() => {
-      saveGame();
-    }, 10000); // Auto-save every 10 seconds
 
     loadGame();
   </script>
