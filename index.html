@@ -71,6 +71,14 @@
       font-size: 1.2em;
     }
 
+    .bottom-button {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+    }
+
     @media (max-width: 600px) {
       .button {
         font-size: 1.2em;
@@ -87,7 +95,6 @@
 
   <div class="top-buttons">
     <button class="button" onclick="saveGame()">Save</button>
-    <button class="button" onclick="toggleVersion()">Kids Version</button>
     <button class="button" onclick="toggleShop()">Shop</button>
   </div>
 
@@ -95,7 +102,7 @@
 
   <div class="counter" id="pointsDisplay">Omni-Points: 0</div>
 
-  <img src="Omni.png.png" alt="Clicker Image" id="character" class="click-img">
+  <img src="Omni.png" alt="Clicker Image" id="character" class="click-img">
 
   <div class="shop-container" id="shop">
     <div class="upgrade">
@@ -113,8 +120,13 @@
     <button class="button" onclick="toggleShop()">Clicker</button>
   </div>
 
+  <div class="bottom-button">
+    <button class="button" onclick="toggleVersion()">Kids Version</button>
+  </div>
+
   <audio id="omniSound" src="are-you-sure.mp3"></audio>
   <audio id="markSound" src="pretty-sure.mp3"></audio>
+  <audio id="buttonClickSound" src="are-you-sure.mp3"></audio>
 
   <script>
     let points = 0;
@@ -131,6 +143,12 @@
 
     const omniSound = document.getElementById('omniSound');
     const markSound = document.getElementById('markSound');
+    const buttonClickSound = document.getElementById('buttonClickSound');
+
+    function playButtonSound() {
+      buttonClickSound.currentTime = 0;
+      buttonClickSound.play();
+    }
 
     function updateUI() {
       pointsDisplay.textContent = isKids ? `Mark-Points: ${points}` : `Omni-Points: ${points}`;
@@ -149,19 +167,21 @@
     });
 
     function toggleVersion() {
+      playButtonSound();
       isKids = !isKids;
-      title.textContent = "Invincible Clicker";
-      character.src = isKids ? "invincible-head.png.png" : "Omni.png.png";
-      document.getElementById('rateLabel').textContent = isKids ? "MPS" : "OPS";
-      document.getElementById('rateLabel2').textContent = isKids ? "MPS" : "OPS";
+      character.src = isKids ? "invincible-head.png.png" : "Omni.png";
+      rateLabel.textContent = isKids ? "MPS" : "OPS";
+      rateLabel2.textContent = isKids ? "MPS" : "OPS";
       updateUI();
     }
 
     function toggleShop() {
+      playButtonSound();
       shop.classList.toggle("visible");
     }
 
     function buyUpgrade(type) {
+      playButtonSound();
       if (type === 'clickPower' && points >= 10) {
         clickPower++;
         points -= 10;
@@ -176,6 +196,7 @@
     }
 
     function saveGame() {
+      playButtonSound();
       localStorage.setItem("invPoints", points);
       localStorage.setItem("invClickPower", clickPower);
       localStorage.setItem("invRate", rate);
@@ -188,7 +209,7 @@
       clickPower = parseInt(localStorage.getItem("invClickPower")) || 1;
       rate = parseInt(localStorage.getItem("invRate")) || 0;
       isKids = localStorage.getItem("invKids") === "true";
-      if (isKids) toggleVersion(); // Set up kids mode
+      if (isKids) toggleVersion(); // Apply kids mode settings
       updateUI();
     }
 
