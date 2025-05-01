@@ -1,38 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Invincible Clicker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <style>
-    html, body {
-      touch-action: manipulation;
-      -ms-touch-action: manipulation;
-      overscroll-behavior: none;
-    }
+<script>
+  document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+  });
 
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      background: url('sky-image.png') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-      text-align: center;
-      overflow-x: hidden;
-    }
+  let points = 0;
+  let clickPower = 1;
+  let rate = 0;
+  let isKids = false;
 
-    h1 {
-      background-color: yellow;
-      color: black;
-      font-size: 3em;
-      margin: 0;
-      padding: 20px;
-    }
+  const pointsDisplay = document.getElementById('pointsDisplay');
+  const character = document.getElementById('character');
+  const rateLabel = document.getElementById('rateLabel');
+  const rateLabel2 = document.getElementById('rateLabel2');
+  const shop = document.getElementById('shop');
 
-    .counter {
-      font-size: 2.5em;
-      margin: 20px 0;
+  const omniSound = document.getElementById('omniSound');
+  const markSound = document.getElementById('markSound');
+  const buttonClickSound = document.getElementById('buttonClickSound');
+
+  function playButtonSound() {
+    buttonClickSound.currentTime = 0;
+    buttonClickSound.play();
+  }
+
+  function updateUI() {
+    pointsDisplay.textContent = isKids ? `Mark-Points: ${points}` : `Omni-Points: ${points}`;
+  }
+
+  character.addEventListener("click", () => {
+    points += clickPower;
+    updateUI();
+    if (isKids) {
+      markSound.currentTime = 0;
+      markSound.play();
+    } else {
+      omniSound.currentTime = 0;
+      omniSound.play();
     }
+  });
+
+  function toggleVersion() {
+    playButtonSound();
+    isKids = !isKids;
+    character.src = isKids ? "invincible-head.png.png" : "Omni.png";
+    rateLabel.textContent = isKids ? "MPS" : "OPS";
+    rateLabel2.textContent = isKids ? "MPS" : "OPS";
+    updateUI();
+  }
+
+  function toggleShop() {
+    playButtonSound();
+    shop.classList.toggle("visible");
+  }
+
+  function buyUpgrade(type) {
+    playButtonSound();
+    if (type === 'clickPower' && points >= 10) {
+      clickPower++;
+      points -= 10;
+    } else if (type === 'autoClick' && points >= 25) {
+      rate += 1;
+      points -= 25;
+    } else if (type === 'bigAutoClick' && points >= 100) {
+      rate += 5;
+      points -= 100;
+    }
+    updateUI();
+  }
+
+  function saveGame() {
+    localStorage.setItem("invPoints", points);
+    localStorage.setItem("invClickPower", clickPower);
+    localStorage.setItem("invRate", rate);
+    localStorage.setItem("invKids", isKids);
+    alert("Game Saved!");
+  }
+
+  function resetGame() {
+    localStorage.clear();
+    location.reload();
+  }
+
+  function loadGame() {
+    points = parseInt(localStorage.getItem("invPoints")) || 0;
+    clickPower = parseInt(localStorage.getItem("invClickPower")) || 1;
+    rate = parseInt(localStorage.getItem("invRate")) || 0;
+    isKids = localStorage.getItem("invKids") === "true";
+    if (isKids) toggleVersion();
+    updateUI();
+  }
+
+  setInterval(() => {
+    points += rate;
+    updateUI();
+  }, 1000);
+
+  loadGame();
+</script>
+
 
     .click-img {
       width: 300px;
