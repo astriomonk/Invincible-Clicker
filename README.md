@@ -1,1 +1,1 @@
-this is a game based of {title card}
+this is a game based off {title card}
